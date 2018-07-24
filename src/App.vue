@@ -1,96 +1,151 @@
 <template>
-  <v-app>
-    <v-navigation-drawer
-      persistent
-      :mini-variant="miniVariant"
-      :clipped="clipped"
-      v-model="drawer"
-      enable-resize-watcher
-      fixed
-      app
+    <v-app dark
+
     >
-      <v-list>
-        <v-list-tile
-          value="true"
-          v-for="(item, i) in items"
-          :key="i"
+        <v-navigation-drawer
+            persistent
+            :mini-variant="!miniVariant"
+            :clipped="!clipped"
+            v-model="drawer"
+            enable-resize-watcher
+            fixed
+            app
+            class="orange"
         >
-          <v-list-tile-action>
-            <v-icon v-html="item.icon"></v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title v-text="item.title"></v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-      </v-list>
-    </v-navigation-drawer>
-    <v-toolbar
-      app
-      :clipped-left="clipped"
-    >
-      <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
-      <v-btn icon @click.stop="miniVariant = !miniVariant">
-        <v-icon v-html="miniVariant ? 'chevron_right' : 'chevron_left'"></v-icon>
-      </v-btn>
-      <v-btn icon @click.stop="clipped = !clipped">
-        <v-icon>web</v-icon>
-      </v-btn>
-      <v-btn icon @click.stop="fixed = !fixed">
-        <v-icon>remove</v-icon>
-      </v-btn>
-      <v-toolbar-title v-text="title"></v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-btn icon @click.stop="rightDrawer = !rightDrawer">
-        <v-icon>menu</v-icon>
-      </v-btn>
-    </v-toolbar>
-    <v-content>
-      <HelloWorld/>
-    </v-content>
-    <v-navigation-drawer
-      temporary
-      :right="right"
-      v-model="rightDrawer"
-      fixed
-      app
-    >
-      <v-list>
-        <v-list-tile @click="right = !right">
-          <v-list-tile-action>
-            <v-icon>compare_arrows</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-title>Switch drawer (click me)</v-list-tile-title>
-        </v-list-tile>
-      </v-list>
-    </v-navigation-drawer>
-    <v-footer :fixed="fixed" app>
-      <span>&copy; 2017</span>
-    </v-footer>
-  </v-app>
+            <v-list class="orange">
+                <v-list-tile
+                    value="true"
+                    v-for="(item, i) in items"
+                    :key="i"
+                    @click.stop="navPage(item.target)"
+                >
+                    <v-list-tile-action dark>
+                        <v-icon v-html="item.icon" color="black"></v-icon>
+                    </v-list-tile-action>
+                    <v-list-tile-content>
+                        <v-list-tile-title class="black--text">
+                            {{lang[item.title]}}
+                        </v-list-tile-title>
+                    </v-list-tile-content>
+                </v-list-tile>
+            </v-list>
+        </v-navigation-drawer>
+        <v-toolbar
+            app
+            :clipped-left="!clipped"
+        >
+            <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
+            <v-btn icon @click.stop="miniVariant = !miniVariant" >
+                <v-icon v-html="miniVariant ? 'chevron_left' : 'chevron_right'" ></v-icon>
+            </v-btn>
+            <v-btn icon @click.stop="clipped = !clipped">
+                <v-icon>web</v-icon>
+            </v-btn>
+            <v-toolbar-title v-text="title"></v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-menu offset-y>
+                <v-btn
+                        icon
+                        slot="activator"
+                        dark
+                >
+                    <v-icon>language</v-icon>
+                </v-btn>
+                <v-list>
+                    <v-list-tile
+                            v-for="(item, index) in languages"
+                            :key="index"
+                            @click="changeLanguage(item.lang)"
+                    >
+                        <v-list-tile-title>{{ lang[item.lang] }}</v-list-tile-title>
+                    </v-list-tile>
+                </v-list>
+            </v-menu>
+        </v-toolbar>
+        <v-content>
+            <router-view/>
+        </v-content>
+
+        <v-footer :fixed="fixed" app>
+            <span>&copy; 2017</span>
+        </v-footer>
+    </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld'
+import TestComponent from './components/TestComponent';
+import router from './router';
+import LanguageSelection from "./components/languageSelection";
 
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  },
-  data () {
-    return {
-      clipped: false,
-      drawer: true,
-      fixed: false,
-      items: [{
-        icon: 'bubble_chart',
-        title: 'Inspire'
-      }],
-      miniVariant: false,
-      right: true,
-      rightDrawer: false,
-      title: 'Vuetify.js'
-    }
-  }
+    name: 'App',
+    components: {
+        LanguageSelection,
+        TestComponent,
+    },
+    data() {
+        return {
+            clipped: false,
+            drawer: true,
+            fixed: false,
+            miniVariant: false,
+            right: true,
+            rightDrawer: false,
+            title: 'FTS IT',
+            language: false,
+            items: [{
+                icon: 'bubble_chart',
+                title: 'Home',
+                target: '/',
+            },
+                {
+                    icon: 'contact_support',
+                    title: 'about',
+                    target: 'about'
+                },
+                {
+                    icon: 'input',
+                    title: 'insertLangKey',
+                    target: 'insertLangKey'
+                }],
+            languages: [
+                {
+                    lang: 'de'
+                },
+                {
+                    lang: 'en',
+                }
+            ]
+        }
+    },
+    methods: {
+        navPage(page) {
+            console.log(page);
+            router.push({path: page});
+        },
+        changeLanguage: function ( lang ) {
+            this.$store.dispatch('setLang', lang)
+                .then(function(){
+                    console.log("created Language");
+                })
+        },
+    },
+    beforeCreate: function(){
+        this.$store.dispatch('setLang', 'de')
+            .then(function(){
+                console.log("created Language");
+            })
+    },
+    computed:{
+        lang() {
+            console.log(this.$store.state.lang['lang']);
+            return this.$store.getters.lang
+        },
+    },
+
 }
 </script>
+
+<style>
+    @import './assets/main.css';
+</style>
