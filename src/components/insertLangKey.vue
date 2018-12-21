@@ -1,48 +1,58 @@
 <template>
     <v-container fluid>
         <v-slide-y-transition mode="out-in">
-            <v-layout column align-center>
-                <v-alert
-                    :value="dataSaved"
-                    type="success"
-                    transition="scale-transition"
-                    outline
-                >
-
-                </v-alert>
-                <v-form ref="form" v-model="valid" lazy-validation>
-                    <v-text-field
-                            v-model="langKey"
-                            :rules="langKeyRules"
-                            label="Name"
-                            required
-                    ></v-text-field>
-                    <v-text-field
-                            v-model="de"
-                            :rules="deRules"
-                            :label="lang['de']"
-                            required
-                    ></v-text-field>
-                    <v-text-field
-                            v-model="en"
-                            :rules="enRules"
-                            :label="lang['en']"
-                            required
-                    ></v-text-field>
-                    <v-text-field
-                            v-model="fr"
-                            :rules="frRules"
-                            :label="lang['fr']"
-                            required
-                    ></v-text-field>
-                    <v-btn
-                            :disabled="!valid"
-                            @click="submit"
+            <v-layout row wrap>
+                <v-flex xs12>
+                    <v-alert
+                        :value="dataSaved"
+                        type="success"
+                        transition="scale-transition"
+                        outline
                     >
-                        submit
-                    </v-btn>
-                    <v-btn @click="clear">clear</v-btn>
-                </v-form>
+                        {{ lang['dataSavedSuccess']}}
+                    </v-alert>
+                    <v-alert
+                            :value="dataCouldNotBeSaved"
+                            type="error"
+                            transition="scale-transition"
+                    >
+
+                    </v-alert>
+                    <v-form ref="form" v-model="valid" lazy-validation>
+                        <v-textarea
+                                v-model="langKey"
+                                :rules="langKeyRules"
+                                label="Name"
+                                required
+                        ></v-textarea>
+                        <v-textarea
+                                v-model="de"
+                                :rules="deRules"
+                                :label="lang['de']"
+                                required
+                        ></v-textarea>
+                        <v-textarea
+                                v-model="en"
+                                :rules="enRules"
+                                :label="lang['en']"
+                                required
+                        ></v-textarea>
+                        <v-textarea
+                                v-model="fr"
+                                :rules="frRules"
+                                :label="lang['fr']"
+                                required
+                        ></v-textarea>
+                        <v-btn
+                                :disabled="!valid"
+                                @click="submit"
+                        >
+                            submit
+                        </v-btn>
+                        <v-btn @click="clear">clear</v-btn>
+
+                    </v-form>
+                </v-flex>
             </v-layout>
         </v-slide-y-transition>
     </v-container>
@@ -75,7 +85,7 @@
                 enRules: [
                     v => !!v || 'is required'
                 ],
-                fr: '',
+                fr: '<emtpy>',
                 frRules: [
                     v => !!v || 'is required'
                 ],
@@ -86,7 +96,7 @@
         methods: {
             submit() {
                 if (this.$refs.form.validate()) {
-                    let Url = 'http://127.0.0.1:10080/insertValue';
+                    let Url = 'http://192.168.30.103:10080/insertValue';
                     let reqData = JSON.stringify({
                         lang_key: this.langKey,
                         values: [{
@@ -111,17 +121,21 @@
                         method: "POST",
                         body: reqData
                     };
+                    let self = this;
 
                     fetch( Url ,Params)
-                        .then( function () {
-                            console.log(this.$data.dataSaved);
-                            this.$data.dataSaved = true;
-                            console.log('changed dataSaved')
+                        .then( response => {
+                            console.log('pka here (data saved) : ', this.$data.dataSaved, ' response: ', response);
+                            this.changeDataSaved(true);
+                            console.log('changed dataSaved: ', this.$data.dataSaved);
+                            return response
 
                         })
-                        .then(this.sleep(5000))
-                        .then( function () {
-                            this.$data.dataSaved = false;
+                        .then(response => {
+                            console.log('this.sleep start', this.$data.dataSaved);
+                            //setTimeout executes the function but  returns the value after the timeout.
+                            //so we need to execute the function '()' return '=>' the function we want to execute after  the timeout
+                            setTimeout(() => this.changeDataSaved(false), 5000)
                         })
                         .catch( function () {
                             alert('there was an error inserting the new Language values');
@@ -131,8 +145,10 @@
             clear () {
                 this.$refs.form.reset()
             },
-            sleep(ms = 0) {
-                return new Promise(r => setTimeout(r, ms));
+            changeDataSaved(value) {
+                console.log('5 seconds later', this.$data.dataSaved);
+                this.$data.dataSaved = value;
+                console.log('alert finished', this.$data.dataSaved);
             }
         }
 

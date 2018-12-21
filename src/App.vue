@@ -4,8 +4,8 @@
     >
         <v-navigation-drawer
             persistent
-            :mini-variant="!miniVariant"
-            :clipped="!clipped"
+            :mini-variant="miniVariant"
+            :clipped="clipped"
             v-model="drawer"
             enable-resize-watcher
             fixed
@@ -32,11 +32,11 @@
         </v-navigation-drawer>
         <v-toolbar
             app
-            :clipped-left="!clipped"
+            :clipped-left="clipped"
         >
             <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
             <v-btn icon @click.stop="miniVariant = !miniVariant" >
-                <v-icon v-html="miniVariant ? 'chevron_left' : 'chevron_right'" ></v-icon>
+                <v-icon v-html="miniVariant ? 'chevron_right' : 'chevron_left'" ></v-icon>
             </v-btn>
             <v-btn icon @click.stop="clipped = !clipped">
                 <v-icon>web</v-icon>
@@ -85,19 +85,20 @@ export default {
     },
     data() {
         return {
-            clipped: false,
+            clipped: true,
             drawer: true,
             fixed: false,
-            miniVariant: false,
+            miniVariant: true,
             right: true,
             rightDrawer: false,
             title: 'FTS IT',
             language: false,
-            items: [{
-                icon: 'bubble_chart',
-                title: 'Home',
-                target: '/',
-            },
+            items: [
+                {
+                    icon: 'bubble_chart',
+                    title: 'Home',
+                    target: '/',
+                },
                 {
                     icon: 'contact_support',
                     title: 'about',
@@ -107,7 +108,14 @@ export default {
                     icon: 'input',
                     title: 'insertLangKey',
                     target: 'insertLangKey'
-                }],
+                },
+                {
+                    icon: 'input',
+                    title: 'createTrunk',
+                    target: 'createTrunk'
+                }
+
+            ],
             languages: [
                 {
                     lang: 'de'
@@ -125,8 +133,8 @@ export default {
         },
         changeLanguage: function ( lang ) {
             this.$store.dispatch('setLang', lang)
-                .then(function(){
-                    console.log("created Language");
+                .then( answer =>{
+                    console.log("created Language ", answer);
                 })
         },
     },

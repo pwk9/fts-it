@@ -3,6 +3,7 @@ import Router from 'vue-router';
 import Home from './views/Home.vue';
 import About from './views/About.vue';
 import insertLangKeyView from './views/insertLangKeyView.vue'
+import createTrunkView from './views/createTrunkView.vue'
 
 Vue.use(Router);
 
@@ -22,6 +23,11 @@ export default new Router({
             path: '/insertLangKey',
             name: 'insertLangKey',
             component: insertLangKeyView,
+        },
+        {
+            path: '/createTrunk',
+            name: 'createTrunk',
+            component: createTrunkView,
         },
     ],
 });

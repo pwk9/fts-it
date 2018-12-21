@@ -1,12 +1,16 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
+let ApiConf = require('./config/apis');
+
 Vue.use(Vuex);
 let langObj: any = {};
+let configObj: any = {};
 
 export default new Vuex.Store({
     state: {
         lang: langObj,
+        config: configObj,
     },
     getters: {
         lang: function(state){
@@ -22,7 +26,7 @@ export default new Vuex.Store({
     actions: {
         setLang( store, chosenLang ) {
             console.log(chosenLang);
-            let Url = 'http://127.0.0.1:10080/getLanguage';
+            let Url = ApiConf.langApi + 'getLanguage';
             let reqData = '{"lang":"' + chosenLang + '"}';
             let Params = {
                 headers: {
@@ -35,25 +39,13 @@ export default new Vuex.Store({
             };
 
             fetch( Url ,Params)
-                .then(function(response) {
+                .then((response) => {
                     return response.json()
                 })
-                .then( function(data) {
-                    let lang = "{";
-                    for (let jsonDict of data) {
-
-                        lang += '"';
-                        lang += jsonDict['lang_key'];
-                        lang += '":"';
-                        lang += jsonDict['value'];
-                        lang += '",';
-                    }
-                    lang = lang.slice(0,-1) + "}";
-                    langObj = JSON.parse(lang);
-                    store.commit({type: 'setLang', lang: langObj});
-
+                .then( (data) => {
+                    store.commit({type: 'setLang', lang: data});
                 })
-                .catch(error=>console.log(error))
+                .catch(error=>console.log("error: ", error))
 
         }
 
